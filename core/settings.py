@@ -1,13 +1,18 @@
 from pathlib import Path
 from datetime import timedelta
+from environs import Env
+
+# Initialize environs
+env = Env()
+env.read_env()
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security
-SECRET_KEY = "django-insecure-hmo)i2b-t@ri7g*#=e0-0b3d_44w*#9!202nldkf#9!77$*z7%"
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = env.str("DJANGO_SECRET")
+DEBUG = env.bool("DJANGO_DEBUG", default=True)
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost"])
 
 # Installed apps
 INSTALLED_APPS = [
@@ -30,16 +35,23 @@ MIDDLEWARE = [
 # Root URL configuration
 ROOT_URLCONF = "core.urls"
 
-# Database (PostgreSQL)
+# Database settings
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "app_database",
-        "USER": "your_db_user",
-        "PASSWORD": "your_db_password",
-        "HOST": "db",
-        "PORT": "5432",
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        "NAME": env.str("POSTGRES_DB", default="app_database"),
+        "USER": env.str("POSTGRES_USER", default="postgres"),
+        "PASSWORD": env.str("POSTGRES_PASSWORD", default="password"),
+        "HOST": env.str("POSTGIS_HOST", default="localhost"),
+        "PORT": env.int("POSTGRES_PORT", default=5432),
     }
+}
+
+# API documentation settings
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Capsule API",
+    "DESCRIPTION": "Documentation for Capsule API",
+    "VERSION": "1.0.0",
 }
 
 # Static files
